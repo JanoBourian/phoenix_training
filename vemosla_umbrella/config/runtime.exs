@@ -1,4 +1,18 @@
 import Config
+import Dotenvy
+
+source!([".env", System.get_env()])
+
+# Configure your database
+config :vemosla, Vemosla.Repo,
+  username: env!("DB_USERNAME"),
+  password: env!("DB_PASSWORD"),
+  hostname: env!("DB_HOST"),
+  database: env!("DB_DATABASE"),
+  port: env!("DB_PORT"),
+  stacktrace: true,
+  show_sensitive_data_on_connection_error: true,
+  pool_size: 10
 
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
