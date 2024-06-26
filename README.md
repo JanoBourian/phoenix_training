@@ -4,9 +4,13 @@ This repository will be used to train phoenix framework to delivery excellent so
 ## Creating the project
 
 Database configuration
+
+* Docker steps
 ```bash
 docker run -d --name vemosla_db -e POSTGRES_PASSWORD=mysecretpassword -e POSTGRES_USER=myusername -e PGDATA=/var/lib/postgresql/data/pgdata -p 5435:5432 -v C:\\Users\\super\\Documents\\databases\\vemosla_db:/var/lib/postgresql/data -d postgres
 ```
+
+To configure the *.env* file I need to change the *runtime.exs* file and add the dependency *dotenvy* in *mix.exs* file
 
 ```bash
 mix archive.install hex phx_new
