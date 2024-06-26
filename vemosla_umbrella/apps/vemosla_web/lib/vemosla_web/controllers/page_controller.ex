@@ -6,4 +6,8 @@ defmodule VemoslaWeb.PageController do
     # so skip the default app layout.
     render(conn, :home, layout: false)
   end
+
+  def index(conn, _params) do
+    render(conn, :index, layout: false)
+  end
 end

@@ -78,3 +78,48 @@ In *router.ex* I can add new frontend routes using the correct scope:
     get "/about", PageController, :home
   end
 ```
+
+### About controllers, views and templates
+
+Well, the next step is create the view and the template in our controller page *page_controller*
+
+```elixir
+defmodule VemoslaWeb.PageController do
+  use VemoslaWeb, :controller
+
+  def home(conn, _params) do
+    # The home page is often custom made,
+    # so skip the default app layout.
+    render(conn, :home, layout: false)
+  end
+
+  def index(conn, _params) do
+    render(conn, :index, layout: false)
+  end
+end
+```
+
+and ensure that the template file gets access to the html folder in *page_html*
+
+```elixir
+defmodule VemoslaWeb.PageHTML do
+  @moduledoc """
+  This module contains pages rendered by PageController.
+
+  See the `page_html` directory for all templates available.
+  """
+  use VemoslaWeb, :html
+
+  embed_templates "page_html/*"
+end
+```
+
+and to add the corresponding html code in *page_html/index.html.heex*
+
+```html
+<h1> Hello @janobourian </h1>
+
+<section>
+  <h2>Hello World, from Phoenix!</h2>
+</section>
+```
