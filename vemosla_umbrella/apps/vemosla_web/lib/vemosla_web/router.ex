@@ -16,10 +16,9 @@ defmodule VemoslaWeb.Router do
 
   scope "/", VemoslaWeb do
     pipe_through :browser
-
     get "/", PageController, :home
-
     get "/about", PageController, :index
+    get "/hello/:messenger", PageController, :show
   end
 
   # Other scopes may use custom stacks.

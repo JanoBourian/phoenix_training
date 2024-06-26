@@ -8,6 +8,10 @@ defmodule VemoslaWeb.PageController do
   end
 
   def index(conn, _params) do
-    render(conn, :index, layout: false)
+    render(conn, :index)
+  end
+
+  def show(conn, %{"messenger" => messenger} = params) do
+    render(conn, :show, messenger: messenger)
   end
 end
