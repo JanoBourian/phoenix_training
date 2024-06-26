@@ -127,3 +127,6 @@ and to add the corresponding html code in *page_html/index.html.heex*
   <h2>Hello World, from Phoenix!</h2>
 </section>
 ```
+
+### Adding a Plug
+
