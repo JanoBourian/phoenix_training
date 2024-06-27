@@ -130,3 +130,28 @@ and to add the corresponding html code in *page_html/index.html.heex*
 
 ### Adding a Plug
 
+Function plug
+
+In *endpoint.ex* a function plug is writen as: 
+
+```elixir
+defmodule HelloWeb.Endpoint do
+  ...
+
+  plug :introspect
+  plug HelloWeb.Router
+
+  def introspect(conn, _opts) do
+    IO.puts """
+    Verb: #{inspect(conn.method)}
+    Host: #{inspect(conn.host)}
+    Headers: #{inspect(conn.req_headers)}
+    """
+
+    conn
+  end
+end
+```
+
+Module plug
+
