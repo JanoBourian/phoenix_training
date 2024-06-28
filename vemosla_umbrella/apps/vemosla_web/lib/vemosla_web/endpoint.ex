@@ -55,6 +55,7 @@ defmodule VemoslaWeb.Endpoint do
   plug Plug.Head
   plug Plug.Session, @session_options
   plug :introspect
+  plug :log_connection
   plug VemoslaWeb.Router
 
   def introspect(conn, _opts) do
@@ -64,6 +65,14 @@ defmodule VemoslaWeb.Endpoint do
     Headers: #{inspect(conn.req_headers)}
     """)
 
+    conn
+  end
+
+  def log_connection(conn, opts) do
+    IO.puts("""
+    Connection: #{inspect(conn)}
+    Opts: #{inspect(opts)}
+    """)
     conn
   end
 end
