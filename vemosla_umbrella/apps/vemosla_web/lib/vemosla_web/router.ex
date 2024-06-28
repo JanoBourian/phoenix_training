@@ -21,6 +21,28 @@ defmodule VemoslaWeb.Router do
     get "/about", PageController, :index
     get "/hello/:messenger", PageController, :show
     get "/janobourian/:id", PageController, :janobourian
+    resources "/users", UserController
+    resources "/posts", PostController, only: [:index, :show]
+    resources "/comments", CommentController, except: [:delete]
+    resources "/reviews", ReviewController
+    resources "/users", UserController do
+      resources "/posts", PostController
+    end
+  end
+
+  scope "/admin", VemoslaWeb.Admin do
+    pipe_through :browser
+
+    resources "/reviews", ReviewController
+  end
+
+  scope "/api", VemoslaWeb.Api, as: :api do
+    pipe_through :browser
+    scope "/v1", V1, as: :v1 do
+      resources "/images", ImageController
+      resources "/reviews", ReviewController
+      resources "/users", UserController
+    end
   end
 
   # Other scopes may use custom stacks.
