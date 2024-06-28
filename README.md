@@ -155,3 +155,52 @@ end
 
 Module plug
 
+First we need to create a file in *lib/vemosla_web/plugs/locale.ex* where we will create our plug as module
+
+```elixir
+defmodule VemoslaWeb.Plugs.Locale do
+  import Plug.Conn
+
+  @locales ["en", "fr", "de"]
+
+  def init(default), do: default
+
+  def call(%Plug.Conn{params: %{"locale" => loc}} = conn, _default) when loc in @locales do
+    assign(conn, :locale, loc)
+  end
+
+  def call(conn, default) do
+    assign(conn, :locale, default)
+  end
+
+end
+```
+
+After that we need to add our plug in *router.ex* 
+
+```elixir
+defmodule VemoslaWeb.Router do
+  use VemoslaWeb, :router
+
+  pipeline :browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_root_layout, html: {VemoslaWeb.Layouts, :root}
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+    plug VemoslaWeb.Plugs.Locale, "en"
+  end
+```
+
+Finally, we add the plug in a template, in this case in *index.html.heex*
+
+```heex
+<h1> Hello @janobourian </h1>
+<p>Locale: <%= @locale %></p>
+<section>
+  <h2>Hello World, from Phoenix!</h2>
+</section>
+```
+
+And test the Plug using *http://localhost:4000/about?locale=fr*

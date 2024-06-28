@@ -8,6 +8,7 @@ defmodule VemoslaWeb.Router do
     plug :put_root_layout, html: {VemoslaWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug VemoslaWeb.Plugs.Locale, "en"
   end
 
   pipeline :api do
