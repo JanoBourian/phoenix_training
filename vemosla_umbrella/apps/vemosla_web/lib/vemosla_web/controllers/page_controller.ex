@@ -14,4 +14,8 @@ defmodule VemoslaWeb.PageController do
   def show(conn, %{"messenger" => messenger} = params) do
     render(conn, :show, messenger: messenger)
   end
+
+  def janobourian(conn, %{"id" => id} = params) do
+    render(conn, :janobourian, id: id)
+  end
 end

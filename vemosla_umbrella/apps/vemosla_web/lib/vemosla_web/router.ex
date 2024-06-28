@@ -20,6 +20,7 @@ defmodule VemoslaWeb.Router do
     get "/", PageController, :home
     get "/about", PageController, :index
     get "/hello/:messenger", PageController, :show
+    get "/janobourian/:id", PageController, :janobourian
   end
 
   # Other scopes may use custom stacks.
