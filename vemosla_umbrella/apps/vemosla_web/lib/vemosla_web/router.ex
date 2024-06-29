@@ -31,6 +31,7 @@ defmodule VemoslaWeb.Router do
     get "/about", PageController, :index
     get "/hello/:messenger", PageController, :show
     get "/janobourian/:id", PageController, :janobourian
+    get "/rabbit", RabbitController, :home
     resources "/users", UserController
     resources "/posts", PostController, only: [:index, :show]
     resources "/comments", CommentController, except: [:delete]
