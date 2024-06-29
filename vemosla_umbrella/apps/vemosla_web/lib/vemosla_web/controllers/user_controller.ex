@@ -5,6 +5,7 @@ defmodule VemoslaWeb.UserController do
     IO.puts("""
     Params inside /users: #{inspect(params)}
     """)
+    # text(conn, "This a text using Elixir")
     render(conn, :index, params: params)
   end
 

@@ -16,6 +16,10 @@ defmodule VemoslaWeb.PageController do
   end
 
   def janobourian(conn, %{"id" => id} = params) do
-    render(conn, :janobourian, id: id)
+    # json(conn, %{id: id})
+    conn
+    |> assign(:id, id)
+    |> assign(:name, "janobourian")
+    |> render(:janobourian)
   end
 end

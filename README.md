@@ -300,3 +300,43 @@ defmodule HelloWeb.Router do
   end
 end
 ```
+
+### Controllers
+
+#### Rendering
+
+Using *text/2* function witout any html format (as plain text)
+
+```elixir
+defmodule VemoslaWeb.UserController do
+  use VemoslaWeb, :controller
+
+  def index(conn, params) do
+    IO.puts("""
+    Params inside /users: #{inspect(params)}
+    """)
+    text(conn, "This a text using Elixir")
+  end
+
+end
+```
+
+Now using *json/2* 
+
+```elixir
+  def janobourian(conn, %{"id" => id} = params) do
+    json(conn, %{id: id})
+  end
+```
+
+We can pass arguments using *Plug.Conn.asign/3*
+
+```elixir
+  def janobourian(conn, %{"id" => id} = params) do
+    # json(conn, %{id: id})
+    conn
+    |> assign(:id, id)
+    |> assign(:name, "janobourian")
+    |> render(:janobourian)
+  end
+```
