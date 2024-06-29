@@ -204,3 +204,70 @@ Finally, we add the plug in a template, in this case in *index.html.heex*
 ```
 
 And test the Plug using *http://localhost:4000/about?locale=fr*
+
+### Routing
+
+To get all routes in a normal project 
+
+```bash
+mix phx.routes
+```
+
+when you have a umbrella project
+
+```bash
+mix phx.routes VemoslaWeb.Router
+```
+
+#### Resources
+
+To create a new RESTful resource in *router.ex* you will add
+
+```elixir
+  resources "/user", UserController
+```
+
+To create a specific resource in *router.ex* you will add
+
+```elixir
+  resources "/posts", PostController, only: [:index, :show]
+```
+
+To create a new resource but without some route
+
+```elixir
+resources "/comments", CommentController, except: [:delete]
+```
+
+#### Nested resources
+
+To nest resources in *router.ex* we add:
+
+```elixir
+resources "/users", UserController do
+  resources "/posts", PostController
+end
+```
+
+#### Scoped routes
+
+```elixir
+scope "/admin", VemoslaWeb.Admin do
+  pipe_through :browser
+
+  resources "/reviews", ReviewController
+end
+```
+
+For /api route
+
+```elixir
+  scope "/api", VemoslaWeb.Api, as: :api do
+    pipe_through :browser
+    scope "/v1", V1, as: :v1 do
+      resources "/images", ImageController
+      resources "/reviews", ReviewController
+      resources "/users", UserController
+    end
+  end
+```
