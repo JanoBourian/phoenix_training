@@ -15,6 +15,16 @@ defmodule VemoslaWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :auth do
+    plug VemoslaWeb.Authentication
+  end
+
+  scope "/reviews", VemoslaWeb do
+    pipe_through [:browser, :auth]
+
+    resources "/", ReviewController
+  end
+
   scope "/", VemoslaWeb do
     pipe_through :browser
     get "/", PageController, :home

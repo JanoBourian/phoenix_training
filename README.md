@@ -271,3 +271,32 @@ For /api route
     end
   end
 ```
+
+#### Pipelines
+
+```elixir
+  pipeline :auth do
+    plug VemoslaWeb.Authentication
+  end
+
+  scope "/reviews", VemoslaWeb do
+    pipe_through [:browser, :auth]
+
+    resources "/", ReviewController
+  end
+```
+
+#### Forward
+
+```elixir
+defmodule HelloWeb.Router do
+  use HelloWeb, :router
+
+  ...
+
+  scope "/" do
+    pipe_through [:authenticate_user, :ensure_admin]
+    forward "/jobs", BackgroundJob.Plug
+  end
+end
+```
