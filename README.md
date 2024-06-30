@@ -367,3 +367,9 @@ end
 ```
 
 and now we can check the JSON output in the next url *http://localhost:4000/rabbit?_format=json*
+
+For *sending response directly*, *setting the conten type*, *setting the HTTP status*, *redirect*, *flash messages* and *error pages* check the documentation https://hexdocs.pm/phoenix/controllers.html
+
+### Components and HEEX
+
+To check this section please read the documentation in *https://hexdocs.pm/phoenix/components.html*
