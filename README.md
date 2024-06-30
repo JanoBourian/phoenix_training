@@ -340,3 +340,30 @@ We can pass arguments using *Plug.Conn.asign/3*
     |> render(:janobourian)
   end
 ```
+
+#### Rendering with other format
+
+In this case we want to send HTML and JSON, first of all we should create *rabbit_json.ex* file with the next content
+
+```elixir
+defmodule VemoslaWeb.RabbitJSON do
+
+  def home(_assigns) do
+    %{mesagge: "This is some JSON"}
+  end
+
+end
+```
+
+after that we need to change the plug *:accepts* in *router.ex* to accept JSON format
+
+```elixir
+defmodule VemoslaWeb.Router do
+  use VemoslaWeb, :router
+
+  pipeline :browser do
+    plug :accepts, ["html", "json"]
+end
+```
+
+and now we can check the JSON output in the next url *http://localhost:4000/rabbit?_format=json*
