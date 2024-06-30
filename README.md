@@ -373,3 +373,19 @@ For *sending response directly*, *setting the conten type*, *setting the HTTP st
 ### Components and HEEX
 
 To check this section please read the documentation in *https://hexdocs.pm/phoenix/components.html*
+
+### Ecto
+
+When we are creatting a new project phoenix will include Ecto with postgress (by default), if you want to change the database or you don't want to use a database you can pass the next arguments:
+
+```bash
+--database
+--no-ecto
+```
+
+#### Create a schema
+
+```bash
+mix phx.gen.schema User users name:string email:string bio:string number_of_pets:integer
+mix ecto.migrate
+```
