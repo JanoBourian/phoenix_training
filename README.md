@@ -389,3 +389,31 @@ When we are creatting a new project phoenix will include Ecto with postgress (by
 mix phx.gen.schema User users name:string email:string bio:string number_of_pets:integer
 mix ecto.migrate
 ```
+
+#### Trying our Schema
+
+```bash
+iex -S mix
+```
+
+```elixir
+alias Vemosla.User
+changeset = User.changeset(%User{}, %{})
+changeset.valid?
+changeset.errors
+params = %{name: "Joe example", email: "joe@mail.com", bio: "An example", number_of_pets: 5, random_key: "random value"}
+changeset = User.changeset(%User{}, params)
+changeset.valid?
+changeset.errors
+changeset.changes
+# here we add validate_length(:bio, min: 2)
+recompile()
+changeset = User.changeset(%User{}, %{bio: "A"})
+changeset.errors[:bio]
+# here we will have an error
+# we will add validator for max bio and email
+recompile()
+changeset = User.changeset(%User{}, %{email: "example.com"})
+changeset.errors[:email]
+# we will get an error
+```
