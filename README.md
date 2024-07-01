@@ -417,3 +417,29 @@ changeset = User.changeset(%User{}, %{email: "example.com"})
 changeset.errors[:email]
 # we will get an error
 ```
+
+#### Data persistence
+
+```bash
+iex -S mix
+```
+
+```elixir
+alias Vemosla.{Repo, User}
+Repo.insert(%User{email: "user1@example.com"})
+Repo.insert(%User{email: "user2@example.com"})
+Repo.all(User)
+```
+
+Using Ecto query advanced tools
+
+```elixir
+import Ecto.Query
+Repo.all(from u in User, select: u.email)
+Repo.one(from u in User, where: ilike(u.email, "%1%"), select: count(u.id))
+Repo.all(from u in User, select: %{u.id => u.email})
+```
+
+#### Using other database
+
+For get that information please check the documentation in *https://hexdocs.pm/phoenix/ecto.html*
