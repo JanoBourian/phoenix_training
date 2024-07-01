@@ -443,3 +443,24 @@ Repo.all(from u in User, select: %{u.id => u.email})
 #### Using other database
 
 For get that information please check the documentation in *https://hexdocs.pm/phoenix/ecto.html*
+
+### Contexts
+
+The next commands help you to create generatos to isolate your application:
+
+```bash
+mix phx.gen.html
+mix phx.gen.json
+mix phx.gen.live
+mix phx.gen.context
+```
+
+To create a context module:
+
+```bash
+mix phx.gen.html Catalog Product products title:string description:string price:decimal views:integer
+mix deps.get
+mix ecto.migrate
+```
+
+Note: if you have some trouble with *mix ecto.migrate* command, you should add *Dotenvy* dep in all *mix.ex* files and run *mix deps.get* and *mix ecto.migrate* in the next route *\phoenix_training\vemosla_umbrella*

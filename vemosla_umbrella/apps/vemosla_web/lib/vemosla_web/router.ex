@@ -39,6 +39,7 @@ defmodule VemoslaWeb.Router do
     resources "/users", UserController do
       resources "/posts", PostController
     end
+    resources "/products", ProductController
   end
 
   scope "/admin", VemoslaWeb.Admin do
