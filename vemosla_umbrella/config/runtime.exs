@@ -5,11 +5,11 @@ source!([".env", System.get_env()])
 
 # Configure your database
 config :vemosla, Vemosla.Repo,
-  username: env!("DB_USERNAME"),
-  password: env!("DB_PASSWORD"),
-  hostname: env!("DB_HOST"),
-  database: env!("DB_DATABASE"),
-  port: env!("DB_PORT"),
+  username: env!("DB_USERNAME", :string, "myusername"),
+  password: env!("DB_PASSWORD", :string, "mysecretpassword"),
+  hostname: env!("DB_HOST", :string, "localhost"),
+  database: env!("DB_DATABASE", :string, "vemosla_dev"),
+  port: env!("DB_PORT", :integer, 5435),
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10

@@ -9,6 +9,12 @@
 </.header>
 
 <.list>
+  <:item title="Categories">
+    <%= for cat <- @product.categories do %>
+      <%= cat.title %>
+      <br/>
+    <% end %>
+   </:item>
   <:item title="Title"><%= @product.title %></:item>
   <:item title="Description"><%= @product.description %></:item>
   <:item title="Price"><%= @product.price %></:item>

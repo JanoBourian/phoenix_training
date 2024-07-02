@@ -490,3 +490,49 @@ Now, in *product_controller.ex*
     render(conn, :show, product: product)
   end
 ```
+
+#### In-context relationships
+
+```bash
+mix phx.gen.context Catalog Category categories title:string:unique
+mix deps.get
+mix ecto.gen.migration create_product_categories
+```
+
+In the last migration you should add
+
+```elixir
+defmodule Hello.Repo.Migrations.CreateProductCategories do
+  use Ecto.Migration
+
+  def change do
+    create table(:product_categories, primary_key: false) do
+      add :product_id, references(:products, on_delete: :delete_all, column: :id, type: :binary_id)
+      add :category_id, references(:categories, on_delete: :delete_all, column: :id, type: :binary_id)
+    end
+
+    create index(:product_categories, [:product_id])
+    create unique_index(:product_categories, [:category_id, :product_id])
+  end
+end
+```
+
+Now we have a table with the relationship between products and categories, but, now we need to create some categories in *priv/repo/seeds.ex*
+
+```elixir
+for title <- ["Home Improvement", "Power Tools", "Gardening", "Books", "Education"] do
+  {:ok, _} = Hello.Catalog.create_category(%{title: title})
+end
+```
+
+and run 
+
+```bash
+mix run priv/repo/seeds.exs
+```
+
+Now is time to asociate products with categories in our web layer, in *lib/vemosla/catalog/product.ex*
+
+```elixir
+
+```
