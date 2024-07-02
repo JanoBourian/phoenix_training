@@ -464,3 +464,29 @@ mix ecto.migrate
 ```
 
 Note: if you have some trouble with *mix ecto.migrate* command, you should add *Dotenvy* dep in all *mix.ex* files and run *mix deps.get* and *mix ecto.migrate* in the next route *\phoenix_training\vemosla_umbrella*
+
+#### Adding catalog functions
+
+In *catalog.ex*
+
+```elixir
+def inc_page_views(%Product{} = product) do
+    {1, [%Product{views: views}]} =
+      from(p in Product, where: p.id == ^product.id, select: [:views])
+      |> Repo.update_all(inc: [views: 1])
+    put_in(product.views, views)
+end
+```
+
+Now, in *product_controller.ex*
+
+```elixir
+  def show(conn, %{"id" => id}) do
+    product =
+      id
+      |> Catalog.get_product!()
+      |> Catalog.inc_page_views()
+
+    render(conn, :show, product: product)
+  end
+```
