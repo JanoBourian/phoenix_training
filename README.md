@@ -534,5 +534,16 @@ mix run priv/repo/seeds.exs
 Now is time to asociate products with categories in our web layer, in *lib/vemosla/catalog/product.ex*
 
 ```elixir
+  schema "products" do
+    field :description, :string
+    field :title, :string
+    field :price, :decimal
+    field :views, :integer
 
+    many_to_many :categories, Category, join_through: "product_categories", on_replace: :delete
+
+    timestamps()
+  end
 ```
+
+#### Cross-context dependecies
