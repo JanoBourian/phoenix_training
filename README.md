@@ -855,3 +855,8 @@ And back to the interface *shopping_cart.ex*:
     end
   end
 ```
+
+#### Adding an Orders context
+
+You can check the info in the documentation: https://hexdocs.pm/phoenix/contexts.html
+
