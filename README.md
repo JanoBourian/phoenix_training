@@ -742,3 +742,116 @@ Now we will change the *shopping_cart.ex* interface:
 +    {:ok, reload_cart(cart)}
 +  end
 ```
+
+Now we will create the *cart_controller.ex*
+
+```elixir
+defmodule HelloWeb.CartController do
+  use HelloWeb, :controller
+
+  alias Hello.ShoppingCart
+
+  def show(conn, _params) do
+    render(conn, :show, changeset: ShoppingCart.change_cart(conn.assigns.cart))
+  end
+end
+```
+
+The *cart_html.ex* file:
+
+```elixir
+defmodule VemoslaWeb.CartHTML do
+  use VemoslaWeb, :html
+
+  alias Vemosla.ShoppingCart
+
+  embed_templates "cart_html/*"
+
+  def currency_to_str(%Decimal{} = val), do: "$#{Decimal.round(val, 2)}"
+end
+
+```
+
+The */cart_html/show.html.heex* file:
+
+```html
+<%= if @cart.items == [] do %>
+  <.header>
+    My Cart
+    <:subtitle>Your cart is empty</:subtitle>
+  </.header>
+<% else %>
+  <.header>
+    My Cart
+  </.header>
+
+  <.simple_form :let={f} for={@changeset} action={~p"/cart"}>
+    <.inputs_for :let={item_form} field={f[:items]}>
+	<% item = item_form.data %>
+      <.input field={item_form[:quantity]} type="number" label={item.product.title} />
+      <%= currency_to_str(ShoppingCart.total_item_price(item)) %>
+    </.inputs_for>
+    <:actions>
+      <.button>Update cart</.button>
+    </:actions>
+  </.simple_form>
+
+  <b>Total</b>: <%= currency_to_str(ShoppingCart.total_cart_price(@cart)) %>
+<% end %>
+
+<.back navigate={~p"/products"}>Back to products</.back>
+```
+
+We will add this code in *shopping_cart.ex* interface: 
+
+```elixir
+  def total_item_price(%CartItem{} = item) do
+    Decimal.mult(item.product.price, item.quantity)
+  end
+
+  def total_cart_price(%Cart{} = cart) do
+    Enum.reduce(cart.items, 0, fn item, acc ->
+      item
+      |> total_item_price()
+      |> Decimal.add(acc)
+    end)
+  end
+```
+
+Now return to *cart_controller.ex* and add the follow code:
+
+```elixir
+  def update(conn, %{"cart" => cart_params}) do
+    case ShoppingCart.update_cart(conn.assigns.cart, cart_params) do
+      {:ok, _cart} ->
+        redirect(conn, to: ~p"/cart")
+
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:error, "There was an error updating your cart")
+        |> redirect(to: ~p"/cart")
+    end
+  end
+```
+
+And back to the interface *shopping_cart.ex*:
+
+```elixir
+  def update_cart(%Cart{} = cart, attrs) do
+    changeset =
+      cart
+      |> Cart.changeset(attrs)
+      |> Ecto.Changeset.cast_assoc(:items, with: &CartItem.changeset/2)
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:cart, changeset)
+    |> Ecto.Multi.delete_all(:discarded_items, fn %{cart: cart} ->
+      from(i in CartItem, where: i.cart_id == ^cart.id and i.quantity == 0)
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{cart: cart}} -> {:ok, cart}
+      {:error, :cart, changeset, _changes_so_far} -> {:error, changeset}
+    end
+  end
+```
