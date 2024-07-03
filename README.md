@@ -547,3 +547,17 @@ Now is time to asociate products with categories in our web layer, in *lib/vemos
 ```
 
 #### Cross-context dependecies
+
+In *vemosla_web* root we will create the context and the schema for our ShoppingCart and Cart
+
+```bash
+mix phx.gen.context ShoppingCart Cart carts user_uuid:uuid:unique
+```
+
+Now we will create the *CartItem* 
+
+```bash
+mix phx.gen.context ShoppingCart CartItem cart_items cart_id:references:carts product_id:references:products price_when_carted:decimal quantity:integer
+```
+
+#### Cross-context data
