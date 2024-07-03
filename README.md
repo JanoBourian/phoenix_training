@@ -561,3 +561,39 @@ mix phx.gen.context ShoppingCart CartItem cart_items cart_id:references:carts pr
 ```
 
 #### Cross-context data
+
+Associate a cart to its items: 
+
+```elixir
+  schema "carts" do
+    field :user_uuid, Ecto.UUID
+
++   has_many :items, Hello.ShoppingCart.CartItem
+
+    timestamps()
+  end
+```
+
+Change the *cart_item.ex*:
+
+```elixir
+  schema "cart_items" do
+    field :price_when_carted, :decimal
+    field :quantity, :integer
+-   field :cart_id, :id
+-   field :product_id, :id
+
++   belongs_to :cart, Hello.ShoppingCart.Cart
++   belongs_to :product, Hello.Catalog.Product
+
+    timestamps()
+  end
+
+  @doc false
+  def changeset(cart_item, attrs) do
+    cart_item
+    |> cast(attrs, [:price_when_carted, :quantity])
+    |> validate_required([:price_when_carted, :quantity])
++   |> validate_number(:quantity, greater_than_or_equal_to: 0, less_than: 100)
+  end
+```

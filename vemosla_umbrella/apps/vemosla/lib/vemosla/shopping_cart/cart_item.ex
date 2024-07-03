@@ -7,8 +7,8 @@ defmodule Vemosla.ShoppingCart.CartItem do
   schema "cart_items" do
     field :price_when_carted, :decimal
     field :quantity, :integer
-    field :cart_id, :binary_id
-    field :product_id, :binary_id
+    belongs_to :cart, Vemosla.ShoppingCart.Cart
+    belongs_to :product, Vemosla.Catalog.Product
 
     timestamps()
   end
@@ -18,5 +18,6 @@ defmodule Vemosla.ShoppingCart.CartItem do
     cart_item
     |> cast(attrs, [:price_when_carted, :quantity])
     |> validate_required([:price_when_carted, :quantity])
+    |> validate_number(:quantity, greater_than_or_equal_to: 0, less_than: 100)
   end
 end
