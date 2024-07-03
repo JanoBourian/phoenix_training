@@ -597,3 +597,148 @@ Change the *cart_item.ex*:
 +   |> validate_number(:quantity, greater_than_or_equal_to: 0, less_than: 100)
   end
 ```
+
+#### Adding Shopping Cart functions
+
+In *router.ex* we should add: 
+
+```elixir
+  pipeline :browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_root_layout, html: {HelloWeb.LayoutView, :root}
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
++   plug :fetch_current_user
++   plug :fetch_current_cart
+  end
+
++ defp fetch_current_user(conn, _) do
++   if user_uuid = get_session(conn, :current_uuid) do
++     assign(conn, :current_uuid, user_uuid)
++   else
++     new_uuid = Ecto.UUID.generate()
++
++     conn
++     |> assign(:current_uuid, new_uuid)
++     |> put_session(:current_uuid, new_uuid)
++   end
++ end
+
++ alias Hello.ShoppingCart
++
++ defp fetch_current_cart(conn, _opts) do
++   if cart = ShoppingCart.get_cart_by_user_uuid(conn.assigns.current_uuid) do
++     assign(conn, :cart, cart)
++   else
++     {:ok, new_cart} = ShoppingCart.create_cart(conn.assigns.current_uuid)
++     assign(conn, :cart, new_cart)
++   end
++ end
+```
+
+also we need to add the routes:
+
+```elixir
+  scope "/", HelloWeb do
+    pipe_through :browser
+
+    get "/", PageController, :index
+    resources "/products", ProductController
+
++   resources "/cart_items", CartItemController, only: [:create, :delete]
+
++   get "/cart", CartController, :show
++   put "/cart", CartController, :update
+  end
+```
+
+Create cart item controller in */controllers/cart_item_controller.ex*:
+
+```elixir
+defmodule HelloWeb.CartItemController do
+  use HelloWeb, :controller
+
+  alias Hello.ShoppingCart
+
+  def create(conn, %{"product_id" => product_id}) do
+    case ShoppingCart.add_item_to_cart(conn.assigns.cart, product_id) do
+      {:ok, _item} ->
+        conn
+        |> put_flash(:info, "Item added to your cart")
+        |> redirect(to: ~p"/cart")
+
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:error, "There was an error adding the item to your cart")
+        |> redirect(to: ~p"/cart")
+    end
+  end
+
+  def delete(conn, %{"id" => product_id}) do
+    {:ok, _cart} = ShoppingCart.remove_item_from_cart(conn.assigns.cart, product_id)
+    redirect(conn, to: ~p"/cart")
+  end
+end
+```
+
+Now we will change the *shopping_cart.ex* interface:
+
+```elixir
++  alias Hello.Catalog
+-  alias Hello.ShoppingCart.Cart
++  alias Hello.ShoppingCart.{Cart, CartItem}
+
++  def get_cart_by_user_uuid(user_uuid) do
++    Repo.one(
++      from(c in Cart,
++        where: c.user_uuid == ^user_uuid,
++        left_join: i in assoc(c, :items),
++        left_join: p in assoc(i, :product),
++        order_by: [asc: i.inserted_at],
++        preload: [items: {i, product: p}]
++      )
++    )
++  end
+
+- def create_cart(attrs \\ %{}) do
+-   %Cart{}
+-   |> Cart.changeset(attrs)
++ def create_cart(user_uuid) do
++   %Cart{user_uuid: user_uuid}
++   |> Cart.changeset(%{})
+    |> Repo.insert()
++   |> case do
++     {:ok, cart} -> {:ok, reload_cart(cart)}
++     {:error, changeset} -> {:error, changeset}
++   end
+  end
+
++  defp reload_cart(%Cart{} = cart), do: get_cart_by_user_uuid(cart.user_uuid)
++
++  def add_item_to_cart(%Cart{} = cart, product_id) do
++    product = Catalog.get_product!(product_id)
++
++    %CartItem{quantity: 1, price_when_carted: product.price}
++    |> CartItem.changeset(%{})
++    |> Ecto.Changeset.put_assoc(:cart, cart)
++    |> Ecto.Changeset.put_assoc(:product, product)
++    |> Repo.insert(
++      on_conflict: [inc: [quantity: 1]],
++      conflict_target: [:cart_id, :product_id]
++    )
++  end
++
++  def remove_item_from_cart(%Cart{} = cart, product_id) do
++    {1, _} =
++      Repo.delete_all(
++        from(i in CartItem,
++          where: i.cart_id == ^cart.id,
++          where: i.product_id == ^product_id
++        )
++      )
++
++    {:ok, reload_cart(cart)}
++  end
+```
