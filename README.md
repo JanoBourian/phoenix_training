@@ -878,3 +878,9 @@ And in *router.ex* using */api* context:
 ```bash
 mix ecto.migrate
 ```
+
+To create a specific migration:
+
+```bash
+mix ecto.gen.migration add_weather_table
+```

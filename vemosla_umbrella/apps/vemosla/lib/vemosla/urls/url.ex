@@ -16,5 +16,7 @@ defmodule Vemosla.Urls.Url do
     url
     |> cast(attrs, [:link, :title])
     |> validate_required([:link, :title])
+    |> unique_constraint([:title])
+    |> unique_constraint([:link])
   end
 end
