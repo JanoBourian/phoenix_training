@@ -54,8 +54,9 @@ defmodule VemoslaWeb.Router do
     resources "/reviews", ReviewController
   end
 
-  scope "/api", VemoslaWeb.Api, as: :api do
-    pipe_through :browser
+  scope "/api", VemoslaWeb do
+    pipe_through :api
+    resources "/urls", UrlController, except: [:new, :edit]
     scope "/v1", V1, as: :v1 do
       resources "/images", ImageController
       resources "/reviews", ReviewController

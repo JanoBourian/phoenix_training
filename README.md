@@ -860,3 +860,21 @@ And back to the interface *shopping_cart.ex*:
 
 You can check the info in the documentation: https://hexdocs.pm/phoenix/contexts.html
 
+## JSON and APIs
+
+```bash
+mix phx.gen.json Urls Url urls link:string title:string
+```
+
+And in *router.ex* using */api* context:
+
+```elixir
+  scope "/api", VemoslaWeb do
+    pipe_through :api
+    resources "/urls", UrlController, except: [:new, :edit]
+  end
+```
+
+```bash
+mix ecto.migrate
+```
