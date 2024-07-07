@@ -444,6 +444,20 @@ Repo.all(from u in User, select: %{u.id => u.email})
 
 For get that information please check the documentation in *https://hexdocs.pm/phoenix/ecto.html*
 
+#### Ecto Repo Functions
+
+```elixir
+alias Bookstore.Catalog
+alias Bookstore.Catalog.{Author, Category}
+alias Bookstore.Repo
+
+author = %Author{name: "dardo"}
+{status, resp } = Repo.insert(author)
+Catalog.list_authors()
+author = Catalog.get_author!(result.id)
+{status, resp } = Repo.delete(author)
+```
+
 ### Contexts
 
 The next commands help you to create generatos to isolate your application:
