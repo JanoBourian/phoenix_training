@@ -456,6 +456,10 @@ author = %Author{name: "dardo"}
 Catalog.list_authors()
 author = Catalog.get_author!(result.id)
 {status, resp } = Repo.delete(author)
+
+# Another kind of operations
+# :count, :sum, :min, :max, :avg
+Repo.aggregate(Author, :count, :id)
 ```
 
 ### Contexts
