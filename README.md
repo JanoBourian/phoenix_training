@@ -460,6 +460,18 @@ author = Catalog.get_author!(result.id)
 # Another kind of operations
 # :count, :sum, :min, :max, :avg
 Repo.aggregate(Author, :count, :id)
+
+## Query
+
+import Ecto.Query
+
+query = from a in "authors", select: {a.id, a.name}
+
+Repo.all(query)
+
+query = from a in "authors", select: [:id, :name]
+
+Repo.all(query)
 ```
 
 ### Contexts
