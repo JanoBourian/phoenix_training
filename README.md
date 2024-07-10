@@ -472,6 +472,21 @@ Repo.all(query)
 query = from a in "authors", select: [:id, :name]
 
 Repo.all(query)
+
+# using where and safe mode
+author_name = "J. K. Rowling"
+query = from a in "authors", where: [name: ^author_name], select: {a.id, a.name}
+Repo.all(query)
+
+author_id = "3cc0f05e-43f3-4d5b-9138-941360c260fe"
+query = from a in "authors", where: [id: type(^author_id, Ecto.UUID)], select: {a.id, a.name}
+Repo.all(query)
+
+query = from c in "categories", where: like(c.name, "%fiction%"), select: {c.name}, order_by: c.name
+Repo.all(query)
+
+query = from c in "categories", where: like(c.name, "%fiction%"), select: {c.name}, order_by: [desc: c.name]
+Repo.all(query)
 ```
 
 ### Contexts
