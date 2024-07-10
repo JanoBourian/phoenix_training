@@ -487,6 +487,17 @@ Repo.all(query)
 
 query = from c in "categories", where: like(c.name, "%fiction%"), select: {c.name}, order_by: [desc: c.name]
 Repo.all(query)
+
+# using schemas and queries
+alias Bookstore.Catalog.{Author, Category}
+alias Bookstore.Repo
+import Ecto.Query 
+
+author = %Author{"name": "Mark Twain"}
+Repo.insert(author)
+
+query = from a in Author, where: like(a.name, "%T%"), select: {a.name}
+Repo.all(query)
 ```
 
 ### Contexts
