@@ -593,6 +593,13 @@ and run
 mix run priv/repo/seeds.exs
 ```
 
+and you can try with:
+
+```bash
+mix ecto.setup
+mix ecto.reset
+```
+
 Now is time to asociate products with categories in our web layer, in *lib/vemosla/catalog/product.ex*
 
 ```elixir
