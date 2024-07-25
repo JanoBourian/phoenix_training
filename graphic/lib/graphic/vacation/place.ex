@@ -15,6 +15,9 @@ defmodule Graphic.Vacation.Place do
     field :pool, :boolean, default: false
     field :wifi, :boolean, default: false
 
+    has_many :bookings, Graphic.Vacation.Booking
+    has_many :reviews, Graphic.Vacation.Review
+
     timestamps(type: :utc_datetime)
   end
 
