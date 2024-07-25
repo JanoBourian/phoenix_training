@@ -1,296 +1,158 @@
 defmodule Graphic.Vacation do
   @moduledoc """
-  The Vacation context.
+  The Vacation context: public interface for finding, booking,
+  and reviewing vacation places.
   """
 
   import Ecto.Query, warn: false
   alias Graphic.Repo
 
-  alias Graphic.Vacation.Place
+  alias Graphic.Vacation.{Place, Booking, Review}
+  alias Graphic.Accounts.User
 
   @doc """
-  Returns the list of places.
+  Returns the place with the given `slug`.
 
-  ## Examples
+  Raises `Ecto.NoResultsError` if no place was found.
+  """
+  def get_place_by_slug!(slug) do
+    Repo.get_by!(Place, slug: slug)
+  end
 
-      iex> list_places()
-      [%Place{}, ...]
-
+  @doc """
+  Returns a list of all places.
   """
   def list_places do
     Repo.all(Place)
   end
 
   @doc """
-  Gets a single place.
+  Returns a list of places matching the given `criteria`.
 
-  Raises `Ecto.NoResultsError` if the Place does not exist.
+  Example Criteria:
 
-  ## Examples
-
-      iex> get_place!(123)
-      %Place{}
-
-      iex> get_place!(456)
-      ** (Ecto.NoResultsError)
-
+  [{:limit, 15}, {:order, :asc}, {:filter, [{:matching, "lake"}, {:wifi, true}, {:guest_count, 3}]}]
   """
-  def get_place!(id), do: Repo.get!(Place, id)
 
-  @doc """
-  Creates a place.
+  def list_places(criteria) do
+    query = from p in Place
 
-  ## Examples
+    Enum.reduce(criteria, query, fn
+      {:limit, limit}, query ->
+        from p in query, limit: ^limit
 
-      iex> create_place(%{field: value})
-      {:ok, %Place{}}
+      {:filter, filters}, query ->
+        filter_with(filters, query)
 
-      iex> create_place(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      {:order, order}, query ->
+        from p in query, order_by: [{^order, :id}]
+    end)
+    |> Repo.all
+  end
 
-  """
-  def create_place(attrs \\ %{}) do
-    %Place{}
-    |> Place.changeset(attrs)
-    |> Repo.insert()
+  defp filter_with(filters, query) do
+    Enum.reduce(filters, query, fn
+      {:matching, term}, query ->
+        pattern = "%#{term}%"
+
+        from q in query,
+          where:
+            ilike(q.name, ^pattern) or
+              ilike(q.description, ^pattern) or
+              ilike(q.location, ^pattern)
+
+      {:pet_friendly, value}, query ->
+        from q in query, where: q.pet_friendly == ^value
+
+      {:pool, value}, query ->
+        from q in query, where: q.pool == ^value
+
+      {:wifi, value}, query ->
+        from q in query, where: q.wifi == ^value
+
+      {:guest_count, count}, query ->
+        from q in query, where: q.max_guests >= ^count
+
+      {:available_between, %{start_date: start_date, end_date: end_date}}, query ->
+        available_between(query, start_date, end_date)
+    end)
+  end
+
+  # Returns a query for places available between the given
+  # start_date and end_date using the Postgres-specific
+  # OVERLAPS function.
+  defp available_between(query, start_date, end_date) do
+    from place in query,
+      left_join: booking in Booking,
+      on:
+        booking.place_id == place.id and
+          fragment(
+            "(?, ?) OVERLAPS (?, ? + INTERVAL '1' DAY)",
+            booking.start_date,
+            booking.end_date,
+            type(^start_date, :date),
+            type(^end_date, :date)
+          ),
+      where: is_nil(booking.place_id)
   end
 
   @doc """
-  Updates a place.
+  Returns the booking with the given `id`.
 
-  ## Examples
-
-      iex> update_place(place, %{field: new_value})
-      {:ok, %Place{}}
-
-      iex> update_place(place, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
+  Raises `Ecto.NoResultsError` if no booking was found.
   """
-  def update_place(%Place{} = place, attrs) do
-    place
-    |> Place.changeset(attrs)
-    |> Repo.update()
+  def get_booking!(id) do
+    Repo.get!(Booking, id)
   end
 
   @doc """
-  Deletes a place.
-
-  ## Examples
-
-      iex> delete_place(place)
-      {:ok, %Place{}}
-
-      iex> delete_place(place)
-      {:error, %Ecto.Changeset{}}
-
+  Creates a booking for the given user.
   """
-  def delete_place(%Place{} = place) do
-    Repo.delete(place)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking place changes.
-
-  ## Examples
-
-      iex> change_place(place)
-      %Ecto.Changeset{data: %Place{}}
-
-  """
-  def change_place(%Place{} = place, attrs \\ %{}) do
-    Place.changeset(place, attrs)
-  end
-
-  alias Graphic.Vacation.Booking
-
-  @doc """
-  Returns the list of bookings.
-
-  ## Examples
-
-      iex> list_bookings()
-      [%Booking{}, ...]
-
-  """
-  def list_bookings do
-    Repo.all(Booking)
-  end
-
-  @doc """
-  Gets a single booking.
-
-  Raises `Ecto.NoResultsError` if the Booking does not exist.
-
-  ## Examples
-
-      iex> get_booking!(123)
-      %Booking{}
-
-      iex> get_booking!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_booking!(id), do: Repo.get!(Booking, id)
-
-  @doc """
-  Creates a booking.
-
-  ## Examples
-
-      iex> create_booking(%{field: value})
-      {:ok, %Booking{}}
-
-      iex> create_booking(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_booking(attrs \\ %{}) do
+  def create_booking(%User{} = user, attrs) do
     %Booking{}
     |> Booking.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:user, user)
     |> Repo.insert()
   end
 
   @doc """
-  Updates a booking.
-
-  ## Examples
-
-      iex> update_booking(booking, %{field: new_value})
-      {:ok, %Booking{}}
-
-      iex> update_booking(booking, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
+  Cancels the given booking.
   """
-  def update_booking(%Booking{} = booking, attrs) do
+  def cancel_booking(%Booking{} = booking) do
     booking
-    |> Booking.changeset(attrs)
+    |> Booking.cancel_changeset(%{state: "canceled"})
     |> Repo.update()
   end
 
   @doc """
-  Deletes a booking.
-
-  ## Examples
-
-      iex> delete_booking(booking)
-      {:ok, %Booking{}}
-
-      iex> delete_booking(booking)
-      {:error, %Ecto.Changeset{}}
-
+  Creates a review for the given user.
   """
-  def delete_booking(%Booking{} = booking) do
-    Repo.delete(booking)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking booking changes.
-
-  ## Examples
-
-      iex> change_booking(booking)
-      %Ecto.Changeset{data: %Booking{}}
-
-  """
-  def change_booking(%Booking{} = booking, attrs \\ %{}) do
-    Booking.changeset(booking, attrs)
-  end
-
-  alias Graphic.Vacation.Review
-
-  @doc """
-  Returns the list of reviews.
-
-  ## Examples
-
-      iex> list_reviews()
-      [%Review{}, ...]
-
-  """
-  def list_reviews do
-    Repo.all(Review)
-  end
-
-  @doc """
-  Gets a single review.
-
-  Raises `Ecto.NoResultsError` if the Review does not exist.
-
-  ## Examples
-
-      iex> get_review!(123)
-      %Review{}
-
-      iex> get_review!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_review!(id), do: Repo.get!(Review, id)
-
-  @doc """
-  Creates a review.
-
-  ## Examples
-
-      iex> create_review(%{field: value})
-      {:ok, %Review{}}
-
-      iex> create_review(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_review(attrs \\ %{}) do
+  def create_review(%User{} = user, attrs) do
     %Review{}
     |> Review.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:user, user)
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a review.
+  # Dataloader
 
-  ## Examples
-
-      iex> update_review(review, %{field: new_value})
-      {:ok, %Review{}}
-
-      iex> update_review(review, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_review(%Review{} = review, attrs) do
-    review
-    |> Review.changeset(attrs)
-    |> Repo.update()
+  def datasource() do
+    Dataloader.Ecto.new(Repo, query: &query/2)
   end
 
-  @doc """
-  Deletes a review.
-
-  ## Examples
-
-      iex> delete_review(review)
-      {:ok, %Review{}}
-
-      iex> delete_review(review)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_review(%Review{} = review) do
-    Repo.delete(review)
+  def query(Booking, %{scope: :place, limit: limit}) do
+    Booking
+    |> where(state: "reserved")
+    |> order_by([desc: :start_date])
+    |> limit(^limit)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking review changes.
+  def query(Booking, %{scope: :user}) do
+    Booking
+    |> order_by([asc: :start_date])
+  end
 
-  ## Examples
-
-      iex> change_review(review)
-      %Ecto.Changeset{data: %Review{}}
-
-  """
-  def change_review(%Review{} = review, attrs \\ %{}) do
-    Review.changeset(review, attrs)
+  def query(queryable, _) do
+    queryable
   end
 end

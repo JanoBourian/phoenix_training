@@ -506,6 +506,41 @@ query = from a in Author, where: like(a.name, "%T%"), select: {a.name}
 Repo.all(query)
 ```
 
+#### Ecto for graphic application 
+
+```elixir
+alias Graphic.Vacation.{Place, Booking, Review}
+alias Graphic.Accounts.User
+
+alias Graphic.Repo
+alias Graphic.Vacation
+alias Graphic.Accounts
+
+import Ecto.Query
+
+query = from p in Place
+query |> Repo.all()
+
+query = from p in query, limit: 15
+query |> Repo.all()
+
+query = from p in Place, limit: 15
+query |> Repo.all()
+
+query = from p in Place, where: p.max_guests >= 3, limit: 15
+query |> Repo.all()
+
+query = from p in query, where: p.wifi == true
+query |> Repo.all()
+
+query = from p in query, where: ilike(p.name, "%lake%")
+query |> Repo.all()
+
+# with the criteria function
+criteria = [{:limit, 2}, {:filter, [{:matching, "lake"}, {:wifi, true}, {:guest_count, 3}]}]
+Vacation.list_places(criteria)
+```
+
 ### Contexts
 
 The next commands help you to create generatos to isolate your application:
