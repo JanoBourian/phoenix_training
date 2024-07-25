@@ -10,6 +10,12 @@ Database configuration
 docker run -d --name vemosla_db -e POSTGRES_PASSWORD=mysecretpassword -e POSTGRES_USER=myusername -e PGDATA=/var/lib/postgresql/data/pgdata -p 5435:5432 -v C:\\Users\\super\\Documents\\databases\\vemosla_db:/var/lib/postgresql/data -d postgres
 ```
 
+For *graphic* 
+
+```bash
+docker run -d --name graphic -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e PGDATA=/var/lib/postgresql/data/pgdata -p 5432:5432 -v C:\\Users\\super\\Documents\\databases\\graphic:/var/lib/postgresql/data -d postgres
+```
+
 To configure the *.env* file I need to change the *runtime.exs* file and add the dependency *dotenvy* in *mix.exs* file
 
 ```bash
