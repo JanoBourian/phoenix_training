@@ -17,4 +17,18 @@ defmodule Graphic.VacationFixtures do
 
     place
   end
+
+  @doc """
+  Generate a booking.
+  """
+  def booking_fixture(attrs \\ %{}) do
+    {:ok, booking} =
+      attrs
+      |> Enum.into(%{
+        start_date: ~D[2024-07-24]
+      })
+      |> Graphic.Vacation.create_booking()
+
+    booking
+  end
 end

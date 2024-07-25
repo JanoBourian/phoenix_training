@@ -8,6 +8,9 @@ defmodule Graphic.Accounts.User do
     field :password_hash, :string
     field :password, :string, virtual: true
 
+    has_many :bookings, Graphic.Vacation.Booking
+    has_many :reviews, Graphic.Vacation.Review
+
     timestamps()
   end
 

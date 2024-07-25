@@ -54,4 +54,58 @@ defmodule Graphic.VacationTest do
       assert %Ecto.Changeset{} = Vacation.change_place(place)
     end
   end
+
+  describe "bookings" do
+    alias Graphic.Vacation.Booking
+
+    import Graphic.VacationFixtures
+
+    @invalid_attrs %{start_date: nil}
+
+    test "list_bookings/0 returns all bookings" do
+      booking = booking_fixture()
+      assert Vacation.list_bookings() == [booking]
+    end
+
+    test "get_booking!/1 returns the booking with given id" do
+      booking = booking_fixture()
+      assert Vacation.get_booking!(booking.id) == booking
+    end
+
+    test "create_booking/1 with valid data creates a booking" do
+      valid_attrs = %{start_date: ~D[2024-07-24]}
+
+      assert {:ok, %Booking{} = booking} = Vacation.create_booking(valid_attrs)
+      assert booking.start_date == ~D[2024-07-24]
+    end
+
+    test "create_booking/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Vacation.create_booking(@invalid_attrs)
+    end
+
+    test "update_booking/2 with valid data updates the booking" do
+      booking = booking_fixture()
+      update_attrs = %{start_date: ~D[2024-07-25]}
+
+      assert {:ok, %Booking{} = booking} = Vacation.update_booking(booking, update_attrs)
+      assert booking.start_date == ~D[2024-07-25]
+    end
+
+    test "update_booking/2 with invalid data returns error changeset" do
+      booking = booking_fixture()
+      assert {:error, %Ecto.Changeset{}} = Vacation.update_booking(booking, @invalid_attrs)
+      assert booking == Vacation.get_booking!(booking.id)
+    end
+
+    test "delete_booking/1 deletes the booking" do
+      booking = booking_fixture()
+      assert {:ok, %Booking{}} = Vacation.delete_booking(booking)
+      assert_raise Ecto.NoResultsError, fn -> Vacation.get_booking!(booking.id) end
+    end
+
+    test "change_booking/1 returns a booking changeset" do
+      booking = booking_fixture()
+      assert %Ecto.Changeset{} = Vacation.change_booking(booking)
+    end
+  end
 end
