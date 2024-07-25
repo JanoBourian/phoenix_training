@@ -31,4 +31,18 @@ defmodule Graphic.VacationFixtures do
 
     booking
   end
+
+  @doc """
+  Generate a review.
+  """
+  def review_fixture(attrs \\ %{}) do
+    {:ok, review} =
+      attrs
+      |> Enum.into(%{
+        rating: 42
+      })
+      |> Graphic.Vacation.create_review()
+
+    review
+  end
 end
