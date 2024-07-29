@@ -563,6 +563,22 @@ Process:
 * execute
 * return JSON
 
+```elixir
+parent = Vacation.get_place_by_slug!("ski-cabin")
+
+doc = """
+query {
+  place(slug: "ski-cabin"){
+    id
+    name
+    location
+  }
+}
+"""
+
+Absinthe.run(doc, GraphicWeb.Schema.Schema)
+```
+
 ### Contexts
 
 The next commands help you to create generatos to isolate your application:

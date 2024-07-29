@@ -1,11 +1,16 @@
 defmodule GraphicWeb.Schema.Schema do
   use Absinthe.Schema
-  alias Getaways.{Accounts, Vacation}
+  alias Graphic.{Accounts, Vacation}
+
+  import_types Absinthe.Type.Custom
 
   query do
     @desc "Get a place by its slug"
     field :place, :place do
       arg :slug, non_null(:string)
+      resolve fn _, %{slug: slug}, _ ->
+        {:ok, Vacation.get_place_by_slug!(slug)}
+      end
     end
 
   end
@@ -26,11 +31,6 @@ defmodule GraphicWeb.Schema.Schema do
     field :price_per_night, non_null(:decimal)
     field :image, non_null(:string)
     field :image_thumbnail, non_null(:string)
-    field :bookings, list_of(:booking) do
-      arg :limit, type: :integer, default_value: 100
-      resolve dataloader(Vacation, :bookings, args: %{scope: :place})
-    end
-    field :reviews, list_of(:review), resolve: dataloader(Vacation)
   end
 
 end
