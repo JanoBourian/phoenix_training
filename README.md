@@ -539,6 +539,10 @@ query |> Repo.all()
 # with the criteria function
 criteria = [{:limit, 2}, {:filter, [{:matching, "lake"}, {:wifi, true}, {:guest_count, 3}]}]
 Vacation.list_places(criteria)
+
+# using Accounts context
+
+Accounts.authenticate("user", "password")
 ```
 
 ### Contexts
