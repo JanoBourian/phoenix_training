@@ -545,6 +545,24 @@ Vacation.list_places(criteria)
 Accounts.authenticate("user", "password")
 ```
 
+#### GraphQL API section
+
+- query: to fetch data
+- mutation: to change date
+- subscription: to new real time data
+
+HTTP:
+* query and mutation
+
+Phoenix Channels:
+* subscriptions
+
+Process:
+* parse
+* validate
+* execute
+* return JSON
+
 ### Contexts
 
 The next commands help you to create generatos to isolate your application:
