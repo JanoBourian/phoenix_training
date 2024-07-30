@@ -13,6 +13,14 @@ defmodule GraphicWeb.Schema.Schema do
       end
     end
 
+    @desc "Get a list of places"
+    field :places, list_of(:place) do
+      arg :limit, :integer
+      resolve fn _, args, _ ->
+        {:ok, Vacation.list_places(args)}
+      end
+    end
+
   end
 
   #

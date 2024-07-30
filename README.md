@@ -579,6 +579,18 @@ query {
 Absinthe.run(doc, GraphicWeb.Schema.Schema)
 ```
 
+Some queries
+```graphql
+query {
+  places(limit:10){
+    id
+    name
+    location
+    maxGuests
+  }
+}
+```
+
 ### Contexts
 
 The next commands help you to create generatos to isolate your application:
