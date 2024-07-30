@@ -3,22 +3,22 @@ defmodule GraphicWeb.Schema.Schema do
   alias Graphic.{Accounts, Vacation}
   alias GraphicWeb.Resolvers
 
-  import_types Absinthe.Type.Custom
+  import_types(Absinthe.Type.Custom)
   import Absinthe.Resolution.Helpers, only: [dataloader: 1, dataloader: 3]
 
   query do
     @desc "Get a place by its slug"
     field :place, :place do
-      arg :slug, non_null(:string)
-      resolve &Resolvers.Vacation.place/3
+      arg(:slug, non_null(:string))
+      resolve(&Resolvers.Vacation.place/3)
     end
 
     @desc "Get a list of places"
     field :places, list_of(:place) do
-      arg :limit, :integer
-      arg :order, type: :sort_order, default_value: :asc
-      arg :filter, :place_filter
-      resolve &Resolvers.Vacation.places/3
+      arg(:limit, :integer)
+      arg(:order, type: :sort_order, default_value: :asc)
+      arg(:filter, :place_filter)
+      resolve(&Resolvers.Vacation.places/3)
     end
   end
 
@@ -54,8 +54,8 @@ defmodule GraphicWeb.Schema.Schema do
   end
 
   enum :sort_order do
-    value :asc
-    value :desc
+    value(:asc)
+    value(:desc)
   end
 
   #
@@ -108,7 +108,7 @@ defmodule GraphicWeb.Schema.Schema do
     source = Dataloader.Ecto.new(Graphic.Repo)
 
     loader =
-      Dataloader.new
+      Dataloader.new()
       |> Dataloader.add_source(Vacation, source)
 
     ctx = Map.put(ctx, :loader, loader)
@@ -119,5 +119,4 @@ defmodule GraphicWeb.Schema.Schema do
   def plugins do
     [Absinthe.Middleware.Dataloader] ++ Absinthe.Plugin.defaults()
   end
-
 end

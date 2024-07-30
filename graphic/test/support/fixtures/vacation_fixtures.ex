@@ -10,9 +10,7 @@ defmodule Graphic.VacationFixtures do
   def place_fixture(attrs \\ %{}) do
     {:ok, place} =
       attrs
-      |> Enum.into(%{
-
-      })
+      |> Enum.into(%{})
       |> Graphic.Vacation.create_place()
 
     place
