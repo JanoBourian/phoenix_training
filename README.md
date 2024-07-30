@@ -623,6 +623,22 @@ query {
 
 ```
 
+#### DataLoader
+
+```elixir
+[place1, place2, place3] = Vacation.list_places([limit: 3])
+loader = Dataloader.new
+source = Dataloader.Ecto.new(Graphic.Repo)
+loader = loader |> Dataloader.add_source(Vacation, source)
+loader = loader |> Dataloader.load(Vacation, :bookings, place1)
+loader = loader |> Dataloader.load(Vacation, :bookings, place2)
+loader = loader |> Dataloader.load(Vacation, :bookings, place3)
+loader = loader |> Dataloader.run()
+loader |> Dataloader.get(Vacation, :bookings, place1)
+loader |> Dataloader.get(Vacation, :bookings, place2)
+loader |> Dataloader.get(Vacation, :bookings, place3)
+```
+
 ### Contexts
 
 The next commands help you to create generatos to isolate your application:
