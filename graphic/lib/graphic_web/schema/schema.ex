@@ -1,6 +1,7 @@
 defmodule GraphicWeb.Schema.Schema do
   use Absinthe.Schema
   alias Graphic.{Accounts, Vacation}
+  alias GraphicWeb.Resolvers
 
   import_types Absinthe.Type.Custom
 
@@ -8,9 +9,7 @@ defmodule GraphicWeb.Schema.Schema do
     @desc "Get a place by its slug"
     field :place, :place do
       arg :slug, non_null(:string)
-      resolve fn _, %{slug: slug}, _ ->
-        {:ok, Vacation.get_place_by_slug!(slug)}
-      end
+      resolve &Resolvers.Vacation.place/3
     end
 
     @desc "Get a list of places"
@@ -18,9 +17,7 @@ defmodule GraphicWeb.Schema.Schema do
       arg :limit, :integer
       arg :order, type: :sort_order, default_value: :asc
       arg :filter, :place_filter
-      resolve fn _, args, _ ->
-        {:ok, Vacation.list_places(args)}
-      end
+      resolve &Resolvers.Vacation.places/3
     end
   end
 
