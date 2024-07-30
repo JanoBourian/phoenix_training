@@ -589,6 +589,16 @@ query {
     maxGuests
   }
 }
+
+query {
+  places(limit: 10, order: DESC, filter: {matching: "lake", wifi: true}) {
+    id
+    name
+    location
+    maxGuests
+  }
+}
+
 ```
 
 ### Contexts
