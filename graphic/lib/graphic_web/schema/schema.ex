@@ -4,6 +4,7 @@ defmodule GraphicWeb.Schema.Schema do
   alias GraphicWeb.Resolvers
 
   import_types Absinthe.Type.Custom
+  import Absinthe.Resolution.Helpers, only: [dataloader: 1, dataloader: 3]
 
   query do
     @desc "Get a place by its slug"
@@ -73,9 +74,7 @@ defmodule GraphicWeb.Schema.Schema do
     field :price_per_night, non_null(:decimal)
     field :image, non_null(:string)
     field :image_thumbnail, non_null(:string)
-    field :bookings, list_of(:booking) do
-      resolve &Resolvers.Vacation.bookings_for_place/3
-    end
+    field :bookings, list_of(:booking), resolve: dataloader(Vacation)
   end
 
   object :booking do
@@ -84,6 +83,22 @@ defmodule GraphicWeb.Schema.Schema do
     field :end_date, non_null(:date)
     field :state, non_null(:string)
     field :total_price, non_null(:decimal)
+  end
+
+  def context(ctx) do
+    source = Dataloader.Ecto.new(Graphic.Repo)
+
+    loader =
+      Dataloader.new
+      |> Dataloader.add_source(Vacation, source)
+
+    ctx = Map.put(ctx, :loader, loader)
+
+    IO.inspect(ctx)
+  end
+
+  def plugins do
+    [Absinthe.Middleware.Dataloader] ++ Absinthe.Plugin.defaults()
   end
 
 end

@@ -637,6 +637,11 @@ loader = loader |> Dataloader.run()
 loader |> Dataloader.get(Vacation, :bookings, place1)
 loader |> Dataloader.get(Vacation, :bookings, place2)
 loader |> Dataloader.get(Vacation, :bookings, place3)
+
+# resolver for bookings in places
+resolve fn parent, args, %{context: %{loader: loader}} ->
+  loader |> Dataloader.load(Vacation, :bookings, parent)
+end
 ```
 
 ### Contexts
