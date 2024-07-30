@@ -75,6 +75,7 @@ defmodule GraphicWeb.Schema.Schema do
     field :image, non_null(:string)
     field :image_thumbnail, non_null(:string)
     field :bookings, list_of(:booking), resolve: dataloader(Vacation)
+    field :reviews, list_of(:review), resolve: dataloader(Vacation)
   end
 
   object :booking do
@@ -83,6 +84,13 @@ defmodule GraphicWeb.Schema.Schema do
     field :end_date, non_null(:date)
     field :state, non_null(:string)
     field :total_price, non_null(:decimal)
+  end
+
+  object :review do
+    field :id, non_null(:id)
+    field :rating, non_null(:integer)
+    field :comment, non_null(:string)
+    field :inserted_at, non_null(:naive_datetime)
   end
 
   def context(ctx) do
