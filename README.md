@@ -599,6 +599,28 @@ query {
   }
 }
 
+query {
+  place(slug: "dock-house"){
+    id
+    name
+    bookings {
+      state
+      totalPrice
+    }
+  }
+}
+
+query {
+  places(limit:3){
+    id
+    name
+    bookings {
+      state
+      totalPrice
+    }
+  }
+}
+
 ```
 
 ### Contexts
