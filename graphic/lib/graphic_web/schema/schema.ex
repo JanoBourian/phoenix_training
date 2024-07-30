@@ -74,8 +74,12 @@ defmodule GraphicWeb.Schema.Schema do
     field :price_per_night, non_null(:decimal)
     field :image, non_null(:string)
     field :image_thumbnail, non_null(:string)
-    field :bookings, list_of(:booking),
-      resolve: dataloader(Vacation, :bookings, args: %{scope: :place})
+
+    field :bookings, list_of(:booking) do
+      arg(:limit, type: :integer, default_value: 100)
+      resolve(dataloader(Vacation, :bookings, args: %{scope: :place}))
+    end
+
     field :reviews, list_of(:review), resolve: dataloader(Vacation)
   end
 
@@ -101,8 +105,10 @@ defmodule GraphicWeb.Schema.Schema do
   object :user do
     field :username, non_null(:string)
     field :email, non_null(:string)
+
     field :bookings, list_of(:booking),
       resolve: dataloader(Vacation, :bookings, args: %{scope: :user})
+
     field :reviews, list_of(:review), resolve: dataloader(Vacation)
   end
 
