@@ -89,7 +89,7 @@ defmodule GraphicWeb.Schema.Schema do
     field :end_date, non_null(:date)
     field :state, non_null(:string)
     field :total_price, non_null(:decimal)
-    field :user, non_null(:user), resolve: dataloader(Vacation)
+    field :user, non_null(:user), resolve: dataloader(Accounts)
     field :place, non_null(:place), resolve: dataloader(Vacation)
   end
 
@@ -98,7 +98,7 @@ defmodule GraphicWeb.Schema.Schema do
     field :rating, non_null(:integer)
     field :comment, non_null(:string)
     field :inserted_at, non_null(:naive_datetime)
-    field :user, non_null(:user), resolve: dataloader(Vacation)
+    field :user, non_null(:user), resolve: dataloader(Accounts)
     field :place, non_null(:place), resolve: dataloader(Vacation)
   end
 
@@ -116,6 +116,7 @@ defmodule GraphicWeb.Schema.Schema do
     loader =
       Dataloader.new()
       |> Dataloader.add_source(Vacation, Vacation.datasource())
+      |> Dataloader.add_source(Accounts, Accounts.datasource())
 
     ctx = Map.put(ctx, :loader, loader)
 
