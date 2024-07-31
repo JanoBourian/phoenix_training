@@ -697,8 +697,39 @@ end
       }
     end
   end
+```
 
+```graphql
+mutation {
+  createReview(placeId:1, comment: "Love it!", rating: 5){
+    id
+    comment
+    rating
+  }
+}
+```
 
+```elixir
+mutation do
+    @desc "Create a review for a place"
+    field :create_review, :review do
+      arg(:place_id, non_null(:id))
+      arg(:comment, non_null(:string))
+      arg(:rating, non_null(:integer))
+    end
+end
+
+  def create_review(_, args, %{context: %{current_user: user}}) do
+    case Vacation.create_review(user, args) do
+      {:error, changeset} ->
+        {:error,
+        message: "Could not create review!",
+        details: ChangesetErrors.error_details(changeset)
+        }
+      {:ok, review} ->
+        {:ok, review}
+    end
+  end
 ```
 
 ### Contexts
