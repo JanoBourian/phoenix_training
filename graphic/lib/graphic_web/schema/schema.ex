@@ -36,6 +36,14 @@ defmodule GraphicWeb.Schema.Schema do
       arg(:booking_id, non_null(:id))
       resolve(&Resolvers.Vacation.cancel_booking/3)
     end
+
+    @desc "Create a review for a place"
+    field :create_review, :review do
+      arg(:place_id, non_null(:id))
+      arg(:comment, non_null(:string))
+      arg(:rating, non_null(:integer))
+      resolve(&Resolvers.Vacation.create_review/3)
+    end
   end
 
   #

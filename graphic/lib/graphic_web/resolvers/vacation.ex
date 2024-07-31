@@ -43,4 +43,16 @@ defmodule GraphicWeb.Resolvers.Vacation do
       }
     end
   end
+
+  def create_review(_, args, %{context: %{current_user: user}}) do
+    case Vacation.create_review(user, args) do
+      {:error, changeset} ->
+        {:error,
+        message: "Could not create review!",
+        details: ChangesetErrors.error_details(changeset)
+        }
+      {:ok, review} ->
+        {:ok, review}
+    end
+  end
 end
