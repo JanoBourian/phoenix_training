@@ -644,6 +644,63 @@ resolve fn parent, args, %{context: %{loader: loader}} ->
 end
 ```
 
+#### Mutations
+
+```graphql
+mutation {
+  createBooking(placeId: 1, startDate: "2019-10-01", endDate: "2019-10-05") {
+    id
+    startDate
+    endDate
+    state
+    totalPrice
+  }
+}
+```
+
+```graphql
+mutation {
+  cancelBooking(bookingId: 13) {
+    id
+    state
+  }
+}
+```
+
+```elixir
+mutation do
+    @desc "Cancel a booking for a place"
+    field :cancel_booking, :booking do
+      arg(:booking_id, non_null(:id))
+      resolve(&Resolvers.Vacation.cancel_booking/3)
+    end
+end
+
+  def cancel_booking(_, args, %{context: %{current_user: user}}) do
+    booking = Vacation.get_booking!(args[:booking_id])
+    if (booking.user_id == user.id) do
+      case Vacation.cancel_booking(booking) do
+        {:error, changeset} ->
+          {
+            :error,
+            message: "Could not cancel booking!",
+            details: ChangesetErrors.error_details(changeset)
+          }
+
+        {:ok, booking} ->
+          {:ok, booking}
+      end
+    else
+      {
+        :error,
+        message: "Hey, that is not your booking!"
+      }
+    end
+  end
+
+
+```
+
 ### Contexts
 
 The next commands help you to create generatos to isolate your application:
