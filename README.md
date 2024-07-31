@@ -732,6 +732,60 @@ end
   end
 ```
 
+#### Authentication and Authorization
+
+auth token -> Plugs (auth token?, valid token?, look up user)
+Mutations: signup, signin -> auth token to GraphQL Client
+
+```graphql
+mutation {
+  signup(username: "skibum", email: "skibum@example.com", password: "secret") {
+    user {
+      username
+      email
+    }
+    token
+  }
+}
+```
+
+```graphql
+mutation {
+  signin(username: "janobourian", password: "secret") {
+    user {
+      username
+      email
+    }
+    token
+  }
+}
+```
+
+```graphql
+query {
+  me{
+    username
+    email
+    bookings {
+      state
+      totalPrice
+    }
+  }
+}
+```
+
+#### Subscriptions with Phoenix Channels
+
+```graphql
+subscription {
+  bookingChange(placeId: 1){
+    startDate
+    endDate
+    state
+  }
+}
+```
+
 ### Contexts
 
 The next commands help you to create generatos to isolate your application:
