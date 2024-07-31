@@ -21,6 +21,11 @@ defmodule GraphicWeb.Schema.Schema do
       arg(:filter, :place_filter)
       resolve(&Resolvers.Vacation.places/3)
     end
+
+    @desc "Get the currently signed-in user"
+    field :me, :user do
+      resolve(&Resolvers.Accounts.me/3)
+    end
   end
 
   mutation do
