@@ -22,6 +22,16 @@ defmodule GraphicWeb.Schema.Schema do
     end
   end
 
+  mutation do
+    @desc "Create a booking for a place"
+    field :create_booking, :booking do
+      arg(:place_id, non_null(:id))
+      arg(:start_date, non_null(:date))
+      arg(:end_date, non_null(:date))
+      resolve(&Resolvers.Vacation.create_booking/3)
+    end
+  end
+
   #
   # Input Object Types
   #
@@ -113,6 +123,8 @@ defmodule GraphicWeb.Schema.Schema do
   end
 
   def context(ctx) do
+    ctx = Map.put(ctx, :current_user, Graphic.Accounts.get_user(1))
+
     loader =
       Dataloader.new()
       |> Dataloader.add_source(Vacation, Vacation.datasource())
