@@ -12,7 +12,7 @@ defmodule GraphicWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
-    # plug GraphicWeb.Plugs.SetCurrentUser
+    plug GraphicWeb.Plugs.SetCurrentUser
   end
 
   scope "/" do
@@ -22,8 +22,7 @@ defmodule GraphicWeb.Router do
 
     forward "/graphiql", Absinthe.Plug.GraphiQL,
       schema: GraphicWeb.Schema.Schema,
-      # socket: GraphicWeb.UserSocket,
-      interface: :simple
+      socket: GraphicWeb.UserSocket
   end
 
   scope "/", GraphicWeb do

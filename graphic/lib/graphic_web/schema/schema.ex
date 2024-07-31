@@ -2,6 +2,7 @@ defmodule GraphicWeb.Schema.Schema do
   use Absinthe.Schema
   alias Graphic.{Accounts, Vacation}
   alias GraphicWeb.Resolvers
+  alias GraphicWeb.Schema.Middleware
 
   import_types(Absinthe.Type.Custom)
   import Absinthe.Resolution.Helpers, only: [dataloader: 1, dataloader: 3]
@@ -28,12 +29,14 @@ defmodule GraphicWeb.Schema.Schema do
       arg(:place_id, non_null(:id))
       arg(:start_date, non_null(:date))
       arg(:end_date, non_null(:date))
+      middleware(Middleware.Authenticate)
       resolve(&Resolvers.Vacation.create_booking/3)
     end
 
     @desc "Cancel a booking for a place"
     field :cancel_booking, :booking do
       arg(:booking_id, non_null(:id))
+      middleware(Middleware.Authenticate)
       resolve(&Resolvers.Vacation.cancel_booking/3)
     end
 
@@ -42,6 +45,7 @@ defmodule GraphicWeb.Schema.Schema do
       arg(:place_id, non_null(:id))
       arg(:comment, non_null(:string))
       arg(:rating, non_null(:integer))
+      middleware(Middleware.Authenticate)
       resolve(&Resolvers.Vacation.create_review/3)
     end
 
@@ -157,7 +161,7 @@ defmodule GraphicWeb.Schema.Schema do
   end
 
   def context(ctx) do
-    ctx = Map.put(ctx, :current_user, Graphic.Accounts.get_user(1))
+    IO.inspect(ctx)
 
     loader =
       Dataloader.new()

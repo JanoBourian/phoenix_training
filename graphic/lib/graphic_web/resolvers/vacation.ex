@@ -14,9 +14,8 @@ defmodule GraphicWeb.Resolvers.Vacation do
     case Vacation.create_booking(user, args) do
       {:error, changeset} ->
         {:error,
-        message: "Could not create booking!",
-        details: ChangesetErrors.error_details(changeset)
-        }
+         message: "Could not create booking!", details: ChangesetErrors.error_details(changeset)}
+
       {:ok, booking} ->
         {:ok, booking}
     end
@@ -24,7 +23,8 @@ defmodule GraphicWeb.Resolvers.Vacation do
 
   def cancel_booking(_, args, %{context: %{current_user: user}}) do
     booking = Vacation.get_booking!(args[:booking_id])
-    if (booking.user_id == user.id) do
+
+    if booking.user_id == user.id do
       case Vacation.cancel_booking(booking) do
         {:error, changeset} ->
           {
@@ -48,9 +48,8 @@ defmodule GraphicWeb.Resolvers.Vacation do
     case Vacation.create_review(user, args) do
       {:error, changeset} ->
         {:error,
-        message: "Could not create review!",
-        details: ChangesetErrors.error_details(changeset)
-        }
+         message: "Could not create review!", details: ChangesetErrors.error_details(changeset)}
+
       {:ok, review} ->
         {:ok, review}
     end

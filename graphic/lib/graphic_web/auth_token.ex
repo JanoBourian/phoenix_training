@@ -14,8 +14,6 @@ defmodule GraphicWeb.AuthToken do
   verifies its integrity.
   """
   def verify(token) do
-    Phoenix.Token.verify(GraphicWeb.Endpoint, @user_salt, token, [
-      max_age: 365 * 24 * 3600
-    ])
+    Phoenix.Token.verify(GraphicWeb.Endpoint, @user_salt, token, max_age: 365 * 24 * 3600)
   end
 end

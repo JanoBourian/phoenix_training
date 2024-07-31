@@ -4,8 +4,9 @@ defmodule GraphicWeb.Resolvers.Accounts do
 
   def signin(_, %{username: username, password: password}, _) do
     case Accounts.authenticate(username, password) do
-      {:error, changeset} ->
+      :error ->
         {:error, message: "Invalid credentials"}
+
       {:ok, user} ->
         token = GraphicWeb.AuthToken.sign(user)
         {:ok, %{user: user, token: token}}
@@ -16,9 +17,8 @@ defmodule GraphicWeb.Resolvers.Accounts do
     case Accounts.create_user(args) do
       {:error, changeset} ->
         {:error,
-        message: "Could not create user!",
-        details: ChangesetErrors.error_details(changeset)
-        }
+         message: "Could not create user!", details: ChangesetErrors.error_details(changeset)}
+
       {:ok, user} ->
         token = GraphicWeb.AuthToken.sign(user)
         {:ok, %{user: user, token: token}}
