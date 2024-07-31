@@ -17,7 +17,8 @@ defmodule Graphic.Application do
       # Start a worker by calling: Graphic.Worker.start_link(arg)
       # {Graphic.Worker, arg},
       # Start to serve requests, typically the last entry
-      GraphicWeb.Endpoint
+      GraphicWeb.Endpoint,
+      {Absinthe.Subscription, GraphicWeb.Endpoint}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

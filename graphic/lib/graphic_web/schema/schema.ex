@@ -70,6 +70,16 @@ defmodule GraphicWeb.Schema.Schema do
     end
   end
 
+  subscription do
+    @desc "Subscribe to booking changes for a place"
+    field :booking_change, :booking do
+      arg(:place_id, non_null(:id))
+      config fn args, _res ->
+        {:ok, topic: args.place_id}
+      end
+    end
+  end
+
   #
   # Input Object Types
   #
